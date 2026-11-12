@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VolunteerConnect | Social Impact, Logistics & Audited Aid Platform</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            900: '#064e3b',
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Custom QR pattern generator styling */
+        .qr-box {
+            background-image: radial-gradient(#0f172a 1.5px, transparent 1.5px), radial-gradient(#0f172a 1.5px, #ffffff 1.5px);
+            background-size: 12px 12px;
+            background-position: 0 0, 6px 6px;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+    <!-- TOP SYSTEM CONTEXT BAR (ROLE SWITCHER SIMULATOR) -->
+    <div class="bg-slate-900 text-slate-200 text-xs py-2 px-4 border-b border-slate-800 z-50">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <span
+                    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/30">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> LIVE SANDBOX
+                </span>
+                <span class="text-slate-400 hidden md:inline">Simulate any operational role across the end-to-end social
+                    impact pipeline:</span>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <label for="role-switcher" class="font-medium text-slate-400 whitespace-nowrap"><i
+                        class="fa-solid fa-user-shield text-emerald-400 mr-1"></i>Active Role:</label>
+                <select id="role-switcher" onchange="switchRole(this.value)"
+                    class="bg-slate-800 text-white border border-slate-700 rounded-md px-2.5 py-1 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full sm:w-72">
+                    <optgroup label="Core Community Roles">
+                        <option value="volunteer">1. Volunteer (Shift Seeker & Field Crew)</option>
+                        <option value="donor">2. In-Kind Goods Donor (Clothes/Food)</option>
+                        <option value="beneficiary">3. Financial & Goods Aid Beneficiary</option>
+                        <option value="organization">4. Social Organization / Event Host</option>
+                    </optgroup>
+                    <optgroup label="Logistics, Field & Verification Ops">
+                        <option value="warehouse">5. Regional Logistics & Warehouse Manager</option>
+                        <option value="qc">6. Quality Control (QC) Inspector</option>
+                        <option value="transport">7. Transport & Fleet Coordinator</option>
+                        <option value="field_director">8. Event Field Director (Live Ops)</option>
+                        <option value="auditor">9. Financial Aid Auditor</option>
+                        <option value="admin">10. Volunteer Recruiter & Super Admin</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- STICKY MAIN HEADER -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Brand Logo -->
+                <div class="flex items-center gap-2.5 cursor-pointer" onclick="navigateTo('home-view')">
+                    <div
+                        class="w-9 h-9 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-sm">
+                        <i class="fa-solid fa-hand-holding-heart text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-xl tracking-tight text-slate-900">Volunteer<span
+                                class="text-emerald-600">Connect</span></span>
+                        <span
+                            class="hidden lg:block text-[10px] uppercase tracking-widest text-slate-400 font-semibold -mt-1">Impact
+                            & Logistics OS</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                    <button onclick="navigateTo('home-view')" data-nav="home-view"
+                        class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">Home</button>
+                    <button onclick="navigateTo('events-view')" data-nav="events-view"
+                        class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">Opportunities</button>
+                    <button onclick="navigateTo('goods-donation-view')" data-nav="goods-donation-view"
+                        class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">Donate
+                        Goods</button>
+                    <button onclick="navigateTo('aid-view')" data-nav="aid-view"
+                        class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">Financial
+                        Aid Hub</button>
+                    <button onclick="navigateTo('hubs-view')" data-nav="hubs-view"
+                        class="nav-btn px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 transition">Drop-Off
+                        Hubs</button>
+                    <button onclick="navigateTo('dashboard-view')" data-nav="dashboard-view"
+                        class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-layer-group"></i> Workspace
+                    </button>
+                </nav>
+
+                <!-- Auth CTA & Mobile Menu Button -->
+                <div class="flex items-center gap-2">
+                    <button onclick="navigateTo('auth-view')"
+                        class="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 transition shadow-sm">
+                        <i class="fa-regular fa-user"></i> <span id="header-auth-label">Login / Register</span>
+                    </button>
+                    <button onclick="toggleMobileMenu()"
+                        class="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Drawer -->
+        <div id="mobile-menu"
+            class="hidden md:hidden bg-white border-t border-slate-200 px-4 pt-2 pb-4 space-y-1 shadow-lg">
+            <button onclick="navigateTo('home-view'); toggleMobileMenu()"
+                class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-emerald-50">Home</button>
+            <button onclick="navigateTo('events-view'); toggleMobileMenu()"
+                class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-emerald-50">Opportunities</button>
+            <button onclick="navigateTo('goods-donation-view'); toggleMobileMenu()"
+                class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-emerald-50">Donate
+                Goods</button>
+            <button onclick="navigateTo('aid-view'); toggleMobileMenu()"
+                class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-emerald-50">Financial
+                Aid Hub</button>
+            <button onclick="navigateTo('hubs-view'); toggleMobileMenu()"
+                class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-emerald-50">Drop-Off
+                Hubs</button>
+            <button onclick="navigateTo('dashboard-view'); toggleMobileMenu()"
+                class="block w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-emerald-700 bg-emerald-50">Management
+                Workspace</button>
+            <button onclick="navigateTo('auth-view'); toggleMobileMenu()"
+                class="block w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-slate-900 border border-slate-200 mt-2">Login
+                / Register</button>
+        </div>
+    </header>
+
+    <!-- MAIN SPA CONTAINER -->
+    <main class="flex-grow">
+
+        <!-- ===================================================================== -->
+        <!-- 1. HOME & ECOSYSTEM LANDING PAGE (#home-view)                         -->
+        <!-- ===================================================================== -->
+        <section id="home-view" class="view-section active">
+            <!-- Hero Section -->
+            <div class="relative bg-slate-900 text-white overflow-hidden">
+                <div
+                    class="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center">
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/95 to-emerald-950/80"></div>
+                <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+                    <div class="max-w-3xl">
+                        <div
+                            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold mb-6">
+                            <i class="fa-solid fa-shield-check"></i> Verified Civic Infrastructure & Transparent Aid
+                            Network
+                        </div>
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight mb-6">
+                            Make a Difference <span class="text-emerald-400">Together.</span> Verified from Pledge to
+                            Delivery.
+                        </h1>
+                        <p class="text-lg sm:text-xl text-slate-300 mb-8 leading-relaxed">
+                            VolunteerConnect unites shift-based field volunteers, vetted social organizations,
+                            QR-tracked physical goods donations, and auditor-verified emergency relief in one
+                            accountable platform.
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="navigateTo('events-view')"
+                                class="px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-900/40 transition flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-check"></i> Find Events & Shifts
+                            </button>
+                            <button onclick="navigateTo('goods-donation-view')"
+                                class="px-6 py-3.5 rounded-xl bg-white text-slate-900 hover:bg-slate-100 font-semibold shadow-lg transition flex items-center gap-2">
+                                <i class="fa-solid fa-box-open text-emerald-600"></i> Pledge Clothes & Food
+                            </button>
+                            <button onclick="navigateTo('aid-view')"
+                                class="px-6 py-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold transition flex items-center gap-2">
+                                <i class="fa-solid fa-hand-holding-dollar text-amber-400"></i> Audited Financial Aid
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Live Impact Metrics Strip -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 pt-8 border-t border-slate-800/80">
+                        <div>
+                            <div class="text-3xl font-extrabold text-white" id="stat-volunteers">14,820+</div>
+                            <div class="text-xs uppercase tracking-wider text-slate-400 mt-1">QR-Verified Volunteer
+                                Hours</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-extrabold text-emerald-400" id="stat-packages">8,430</div>
+                            <div class="text-xs uppercase tracking-wider text-slate-400 mt-1">QC-Inspected Aid Packages
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-extrabold text-white">$312,500</div>
+                            <div class="text-xs uppercase tracking-wider text-slate-400 mt-1">100% Audited Direct Aid
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-extrabold text-amber-400">4 Hubs</div>
+                            <div class="text-xs uppercase tracking-wider text-slate-400 mt-1">Active Regional Warehouses
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4-Step Operational Workflow Map -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <span class="text-xs font-bold uppercase tracking-widest text-emerald-600">End-to-End
+                        Accountability</span>
+                    <h2 class="text-3xl font-extrabold text-slate-900 mt-2">How VolunteerConnect Operates</h2>
+                    <p class="text-slate-600 mt-3 text-sm sm:text-base">Every shift, parcel, and dollar passes through
+                        structured verification gates to eliminate scatter, fraud, and logistical bottlenecks.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Step 1 -->
+                    <div
+                        class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition relative">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-qrcode text-lg"></i>
+                        </div>
+                        <span class="text-xs font-bold text-emerald-600 uppercase">01. Shift Verification</span>
+                        <h3 class="text-lg font-bold text-slate-900 mt-1 mb-2">Role-Based Shifts & QR Check-In</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">Organizations post approved events with
+                            granular shift roles. Volunteers apply, receive personal QR passes, and log verified field
+                            hours on-site.</p>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 font-bold flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-truck-fast text-lg"></i>
+                        </div>
+                        <span class="text-xs font-bold text-blue-600 uppercase">02. In-Kind Logistics</span>
+                        <h3 class="text-lg font-bold text-slate-900 mt-1 mb-2">Tagged Parcels & Fleet Routing</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">Donors pledge clothes, food, or kits and
+                            generate unique Package QR Tags for regional hub drop-off or scheduled volunteer driver
+                            pickup.</p>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 font-bold flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-boxes-stacked text-lg"></i>
+                        </div>
+                        <span class="text-xs font-bold text-amber-600 uppercase">03. Warehouse & QC Controls</span>
+                        <h3 class="text-lg font-bold text-slate-900 mt-1 mb-2">Intake Inspection & Stock Dispatch</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">QC Inspectors screen incoming goods before
+                            warehouse managers allocate verified inventory directly to approved relief drives.</p>
+                    </div>
+                    <!-- Step 4 -->
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 font-bold flex items-center justify-center mb-4">
+                            <i class="fa-solid fa-file-shield text-lg"></i>
+                        </div>
+                        <span class="text-xs font-bold text-rose-600 uppercase">04. Audited Financial Aid</span>
+                        <h3 class="text-lg font-bold text-slate-900 mt-1 mb-2">Document-Vetted Campaigns</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">Beneficiaries submit medical bills, IDs, and
+                            usage plans. Independent Financial Auditors verify authenticity before public fundraising
+                            opens.</p>
+                    </div>
+                </div>
+
+                <!-- Featured Preview Strip -->
+                <div
+                    class="mt-16 bg-emerald-900 rounded-2xl p-8 sm:p-10 text-white flex flex-col lg:flex-row items-center justify-between gap-6">
+                    <div>
+                        <h3 class="text-2xl font-bold">Explore All 10 Operational Workspaces</h3>
+                        <p class="text-emerald-200 text-sm mt-1 max-w-2xl">Use the top bar Role Switcher to test
+                            workflows as a Volunteer, Donor, Beneficiary, Organization Host, QC Inspector, Fleet
+                            Coordinator, Field Director, Auditor, or Admin.</p>
+                    </div>
+                    <button onclick="navigateTo('dashboard-view')"
+                        class="px-6 py-3 rounded-xl bg-white text-emerald-900 font-bold hover:bg-emerald-50 transition whitespace-nowrap shadow">
+                        Open Active Workspace <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- 2. OPPORTUNITY SEARCH & MULTI-FILTER LISTING (#events-view)           -->
+        <!-- ===================================================================== -->
+        <section id="events-view" class="view-section py-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <h1 class="text-3xl font-extrabold text-slate-900">Search Opportunities & Field Shifts</h1>
+                        <p class="text-slate-600 mt-1">All events are vetted by platform moderators with role-specific
+                            shift allocations.</p>
+                    </div>
+                    <div class="text-sm text-slate-500 font-medium" id="events-count-label">Showing 6 verified
+                        opportunities</div>
+                </div>
+
+                <!-- Multi-Filter Bar -->
+                <div
+                    class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                    <div class="lg:col-span-2 relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400"></i>
+                        <input type="text" id="filter-keyword" oninput="applyEventFilters()"
+                            placeholder="Search title, skill, or organization..."
+                            class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                    </div>
+                    <div>
+                        <select id="filter-category" onchange="applyEventFilters()"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="ALL">All Categories</option>
+                            <option value="Environment">Environment</option>
+                            <option value="Relief & Goods Drive">Relief & Goods Drive</option>
+                            <option value="Education">Education</option>
+                            <option value="Health">Health</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="filter-location" onchange="applyEventFilters()"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="ALL">All Locations</option>
+                            <option value="Dhaka">Dhaka</option>
+                            <option value="Chattogram">Chattogram</option>
+                            <option value="Sylhet">Sylhet</option>
+                            <option value="Rajshahi">Rajshahi</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="date" id="filter-date" onchange="applyEventFilters()"
+                            class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                        <button onclick="resetEventFilters()" title="Reset Filters"
+                            class="px-3.5 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 text-sm">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Event Cards Grid -->
+                <div id="events-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Populated dynamically by JS -->
+                </div>
+
+                <!-- Pagination Controls -->
+                <div id="events-pagination" class="mt-10 flex items-center justify-center gap-2">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- 3. GRANULAR EVENT SHIFT DETAILS (#event-detail-view)                  -->
+        <!-- ===================================================================== -->
+        <section id="event-detail-view" class="view-section py-10">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" id="event-detail-container">
+                <!-- Populated dynamically when clicking an event -->
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- 4. ROLE-BASED AUTHENTICATION & ONBOARDING (#auth-view)                -->
+        <!-- ===================================================================== -->
+        <section id="auth-view" class="view-section py-12">
+            <div class="max-w-lg mx-auto px-4">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden">
+                    <!-- Tabs -->
+                    <div class="grid grid-cols-2 border-b border-slate-200 bg-slate-50">
+                        <button id="tab-login" onclick="toggleAuthMode('login')"
+                            class="py-4 text-sm font-bold text-emerald-700 bg-white border-b-2 border-emerald-600">Sign
+                            In</button>
+                        <button id="tab-signup" onclick="toggleAuthMode('signup')"
+                            class="py-4 text-sm font-semibold text-slate-500 hover:text-slate-800">Create
+                            Account</button>
+                    </div>
+
+                    <div class="p-6 sm:p-8">
+                        <div class="text-center mb-6">
+                            <div
+                                class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-3 text-xl">
+                                <i class="fa-solid fa-hand-holding-heart"></i>
+                            </div>
+                            <h2 id="auth-heading" class="text-2xl font-extrabold text-slate-900">Welcome Back</h2>
+                            <p id="auth-sub" class="text-sm text-slate-500 mt-1">Access your personalized impact
+                                workspace</p>
+                        </div>
+
+                        <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                            <div id="signup-fields" class="hidden space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-700 mb-1.5">Select
+                                        Account Role</label>
+                                    <div class="grid grid-cols-2 gap-2.5">
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="auth-role" value="volunteer" checked
+                                                class="peer sr-only" />
+                                            <div
+                                                class="p-3 rounded-xl border border-slate-200 peer-checked:border-emerald-600 peer-checked:bg-emerald-50 text-center transition">
+                                                <i class="fa-solid fa-person-raising text-emerald-600 mb-1"></i>
+                                                <div class="text-xs font-bold text-slate-800">Volunteer</div>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="auth-role" value="organization"
+                                                class="peer sr-only" />
+                                            <div
+                                                class="p-3 rounded-xl border border-slate-200 peer-checked:border-emerald-600 peer-checked:bg-emerald-50 text-center transition">
+                                                <i class="fa-solid fa-building-ngo text-blue-600 mb-1"></i>
+                                                <div class="text-xs font-bold text-slate-800">Organization</div>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="auth-role" value="donor" class="peer sr-only" />
+                                            <div
+                                                class="p-3 rounded-xl border border-slate-200 peer-checked:border-emerald-600 peer-checked:bg-emerald-50 text-center transition">
+                                                <i class="fa-solid fa-box-heart text-amber-600 mb-1"></i>
+                                                <div class="text-xs font-bold text-slate-800">In-Kind Donor</div>
+                                            </div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="radio" name="auth-role" value="beneficiary"
+                                                class="peer sr-only" />
+                                            <div
+                                                class="p-3 rounded-xl border border-slate-200 peer-checked:border-emerald-600 peer-checked:bg-emerald-50 text-center transition">
+                                                <i class="fa-solid fa-hand-holding-medical text-rose-600 mb-1"></i>
+                                                <div class="text-xs font-bold text-slate-800">Beneficiary</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name /
+                                        Organization Title</label>
+                                    <input type="text" id="auth-name" placeholder="e.g. Nadia Rahman or Green Earth BD"
+                                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
+                                <input type="email" id="auth-email" required placeholder="you@example.org"
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
+                                <input type="password" id="auth-password" required placeholder="••••••••"
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                            </div>
+
+                            <button type="submit" id="auth-submit-btn"
+                                class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow transition">
+                                Sign In & Launch Workspace
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- 5. IN-KIND GOODS DONATION TERMINAL (#goods-donation-view)             -->
+        <!-- ===================================================================== -->
+        <section id="goods-donation-view" class="view-section py-10">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-8">
+                    <span class="text-xs font-bold uppercase tracking-widest text-emerald-600">Physical Relief Supply
+                        Chain</span>
+                    <h1 class="text-3xl font-extrabold text-slate-900 mt-1">In-Kind Goods Donation Terminal</h1>
+                    <p class="text-slate-600 mt-1">Pledge clothes, dry rations, or medical kits, choose a hand-off
+                        method, and generate a scannable Package QR Tag.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Donation Form -->
+                    <form onsubmit="submitGoodsPledge(event)"
+                        class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-5">
+                        <h3 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3">1. Item & Condition
+                            Details</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Donor Name *</label>
+                                <input type="text" id="pledge-donor" required value="Tariqul Islam"
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Goods Category *</label>
+                                <select id="pledge-category"
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="Winter Clothes">Winter Clothes (Jackets, Blankets)</option>
+                                    <option value="General Apparel">General Apparel (Clean Adult/Kids Wear)</option>
+                                    <option value="Dry Ration/Food">Dry Ration / Non-Perishable Food</option>
+                                    <option value="Baby Supplies">Baby Supplies & Formula</option>
+                                    <option value="Medical Kits">First-Aid & Medical Kits</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Quantity / Volume
+                                    *</label>
+                                <input type="text" id="pledge-qty" required
+                                    placeholder="e.g., 25 Winter Jackets (2 Boxes)"
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Item Condition *</label>
+                                <select id="pledge-condition"
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="New / Sealed">New / Factory Sealed</option>
+                                    <option value="Gently Used (Washed & Clean)">Gently Used (Washed & Clean)</option>
+                                    <option value="Fair (Usable, Minor Wear)">Fair (Usable, Minor Wear)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Manifest Description
+                                *</label>
+                            <textarea id="pledge-desc" rows="2" required
+                                placeholder="List sizes, expiration dates for food/meds, or box count..."
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                        </div>
+
+                        <h3 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-3 pt-2">2. Logistics
+                            Hand-Off Selector</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="handoff-method" value="Self Drop-Off at Regional Hub" checked
+                                    onchange="togglePickupAddress(false)" class="peer sr-only" />
+                                <div
+                                    class="p-4 rounded-xl border-2 border-slate-200 peer-checked:border-emerald-600 peer-checked:bg-emerald-50/60 transition">
+                                    <div class="flex items-center gap-2 font-bold text-sm text-slate-900">
+                                        <i class="fa-solid fa-warehouse text-emerald-600"></i> Self Drop-Off at Hub
+                                    </div>
+                                    <p class="text-xs text-slate-500 mt-1">Deliver directly to a regional warehouse
+                                        during operating hours.</p>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="handoff-method" value="Volunteer Driver Home Pickup"
+                                    onchange="togglePickupAddress(true)" class="peer sr-only" />
+                                <div
+                                    class="p-4 rounded-xl border-2 border-slate-200 peer-checked:border-emerald-600 peer-checked:bg-emerald-50/60 transition">
+                                    <div class="flex items-center gap-2 font-bold text-sm text-slate-900">
+                                        <i class="fa-solid fa-truck-pickup text-blue-600"></i> Volunteer Home Pickup
+                                    </div>
+                                    <p class="text-xs text-slate-500 mt-1">Fleet Coordinator dispatches a verified
+                                        volunteer driver to your address.</p>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div id="pickup-address-field" class="hidden">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Pickup Street Address
+                                *</label>
+                            <input type="text" id="pledge-address" placeholder="House 14, Road 7, Dhanmondi, Dhaka"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Target Regional Hub
+                                    *</label>
+                                <select id="pledge-hub"
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                    <option value="Dhaka Central Hub (Tejgaon)">Dhaka Central Hub (Tejgaon)</option>
+                                    <option value="Uttara North Relief Depot">Uttara North Relief Depot</option>
+                                    <option value="Chattogram Port Warehouse">Chattogram Port Warehouse</option>
+                                    <option value="Sylhet Flood Response Center">Sylhet Flood Response Center</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Scheduled Date & Slot
+                                    *</label>
+                                <input type="datetime-local" id="pledge-datetime" required
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                            class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-qrcode"></i> Register Pledge & Generate Package Tracking QR Tag
+                        </button>
+                    </form>
+
+                    <!-- Live QR Tag Receipt Card -->
+                    <div class="lg:col-span-1">
+                        <div id="generated-qr-card"
+                            class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm sticky top-24">
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Package Tracking
+                                    Tag</span>
+                                <span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800"
+                                    id="qr-tag-status">Ready to Pledge</span>
+                            </div>
+                            <div class="bg-slate-50 border-2 border-dashed border-slate-300 rounded-xl p-5 text-center">
+                                <div
+                                    class="w-36 h-36 mx-auto bg-white p-2 rounded-lg border border-slate-200 shadow-inner flex items-center justify-center">
+                                    <div class="w-full h-full qr-box flex items-center justify-center">
+                                        <span
+                                            class="bg-white px-2 py-0.5 text-[10px] font-mono font-bold border border-slate-300 rounded"
+                                            id="qr-tag-code">PKG-8841</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3 font-mono font-bold text-base text-slate-900" id="qr-tag-id">PKG-8841
+                                </div>
+                                <p class="text-xs text-slate-500 mt-1" id="qr-tag-summary">Submit the form to generate a
+                                    unique scannable QR label for QC intake.</p>
+                            </div>
+                            <div class="mt-4 space-y-2 text-xs text-slate-600">
+                                <div class="flex items-start gap-2">
+                                    <i class="fa-solid fa-circle-info text-emerald-600 mt-0.5"></i>
+                                    <span>Attach or show this Tag ID at drop-off. QC Inspectors scan this code to log
+                                        item hygiene and update warehouse stock.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- 6. REGIONAL DROP-OFF HUBS & WAREHOUSE NETWORK (#hubs-view)            -->
+        <!-- ===================================================================== -->
+        <section id="hubs-view" class="view-section py-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="mb-8">
+                    <span class="text-xs font-bold uppercase tracking-widest text-emerald-600">Physical
+                        Infrastructure</span>
+                    <h1 class="text-3xl font-extrabold text-slate-900 mt-1">Regional Drop-Off Hubs & Warehouse Network
+                    </h1>
+                    <p class="text-slate-600 mt-1">Live storage capacity telemetry, accepted relief categories, and hub
+                        management contacts.</p>
+                </div>
+
+                <div id="hubs-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- 7. AUDITED FINANCIAL AID HUB (#aid-view)                              -->
+        <!-- ===================================================================== -->
+        <section id="aid-view" class="view-section py-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <div
+                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-2">
+                            <i class="fa-solid fa-circle-check"></i> 100% Document-Audited Campaigns
+                        </div>
+                        <h1 class="text-3xl font-extrabold text-slate-900">Audited Financial Aid Hub</h1>
+                        <p class="text-slate-600 mt-1">Every campaign listed below has passed multi-point identity,
+                            hospital invoice, or institutional audit verification.</p>
+                    </div>
+                    <button onclick="switchRole('beneficiary'); navigateTo('dashboard-view')"
+                        class="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold hover:bg-slate-800 transition self-start">
+                        <i class="fa-solid fa-file-medical mr-1.5"></i> Apply for Audited Aid
+                    </button>
+                </div>
+
+                <div id="aid-campaigns-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================================================================== -->
+        <!-- 8. MULTI-ROLE WORKSPACE PORTAL (#dashboard-view)                      -->
+        <!-- ===================================================================== -->
+        <section id="dashboard-view" class="view-section py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Workspace Header Banner -->
+                <div
+                    class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 mb-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div id="ws-icon-box"
+                            class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h1 id="ws-title" class="text-xl sm:text-2xl font-extrabold text-slate-900">Volunteer
+                                    Workspace</h1>
+                                <span id="ws-badge"
+                                    class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Verified
+                                    Field Crew</span>
+                            </div>
+                            <p id="ws-subtitle" class="text-sm text-slate-500 mt-0.5">Manage shift applications, view QR
+                                check-in badge, and download verified impact certificates.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-slate-400">Switch Role:</span>
+                        <select onchange="switchRole(this.value)" id="ws-role-mirror"
+                            class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            <option value="volunteer">1. Volunteer</option>
+                            <option value="donor">2. In-Kind Donor</option>
+                            <option value="beneficiary">3. Beneficiary</option>
+                            <option value="organization">4. Organization Host</option>
+                            <option value="warehouse">5. Warehouse Manager</option>
+                            <option value="qc">6. QC Inspector</option>
+                            <option value="transport">7. Fleet Coordinator</option>
+                            <option value="field_director">8. Field Director</option>
+                            <option value="auditor">9. Financial Aid Auditor</option>
+                            <option value="admin">10. Super Admin</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Dynamic Role Content Injection Point -->
+                <div id="workspace-dynamic-content">
+                    <!-- Rendered by renderWorkspace() -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
+                        <i class="fa-solid fa-hand-holding-heart"></i>
+                    </div>
+                    <span class="font-bold text-white text-lg">VolunteerConnect</span>
+                </div>
+                <div class="flex flex-wrap justify-center gap-6 text-xs font-medium">
+                    <button onclick="navigateTo('home-view')" class="hover:text-white transition">Platform
+                        Overview</button>
+                    <button onclick="navigateTo('events-view')" class="hover:text-white transition">Verified
+                        Shifts</button>
+                    <button onclick="navigateTo('goods-donation-view')" class="hover:text-white transition">In-Kind
+                        Terminal</button>
+                    <button onclick="navigateTo('aid-view')" class="hover:text-white transition">Audited Aid</button>
+                    <button onclick="navigateTo('hubs-view')" class="hover:text-white transition">Regional
+                        Warehouses</button>
+                </div>
+                <div class="text-xs text-slate-500">
+                    © 2026 VolunteerConnect Civic Logistics OS.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===================================================================== -->
+    <!-- INTERACTIVE MODALS                                                    -->
+    <!-- ===================================================================== -->
+
+    <!-- 1. Shift Application Modal -->
+    <div id="shift-modal"
+        class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <span class="text-xs font-bold uppercase text-emerald-600">Shift Application</span>
+                    <h3 id="modal-shift-event-title" class="text-lg font-extrabold text-slate-900">Tree Plantation Drive
+                    </h3>
+                    <p id="modal-shift-role-name" class="text-sm font-semibold text-slate-600">Role: Ground Planting
+                        Crew</p>
+                </div>
+                <button onclick="closeModal('shift-modal')" class="text-slate-400 hover:text-slate-700"><i
+                        class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="submitShiftApplication(event)" class="space-y-4">
+                <input type="hidden" id="modal-event-id" />
+                <input type="hidden" id="modal-shift-id" />
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name *</label>
+                    <input type="text" id="app-fullname" required value="Amina Chowdhury"
+                        class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Email *</label>
+                        <input type="email" id="app-email" required value="amina.c@volunteer.org"
+                            class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Phone *</label>
+                        <input type="tel" id="app-phone" required value="+880 1711-009988"
+                            class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Why do you want to join this shift?
+                        *</label>
+                    <textarea id="app-motivation" rows="3" required
+                        placeholder="Briefly share relevant experience or availability..."
+                        class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('shift-modal')"
+                        class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Cancel</button>
+                    <button type="submit"
+                        class="px-5 py-2 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow">Confirm
+                        Shift Application</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Post New Event Modal (Organization Host) -->
+    <div id="create-event-modal"
+        class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div
+            class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-extrabold text-slate-900">Post New Community Event</h3>
+                <button onclick="closeModal('create-event-modal')" class="text-slate-400 hover:text-slate-700"><i
+                        class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="submitNewEvent(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Event Title *</label>
+                    <input type="text" id="new-ev-title" required placeholder="e.g., Monsoon Flood Relief Packing Drive"
+                        class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Category *</label>
+                        <select id="new-ev-cat"
+                            class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+                            <option value="Environment">Environment</option>
+                            <option value="Relief & Goods Drive">Relief & Goods Drive</option>
+                            <option value="Education">Education</option>
+                            <option value="Health">Health</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Location *</label>
+                        <select id="new-ev-loc"
+                            class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+                            <option value="Dhaka">Dhaka</option>
+                            <option value="Chattogram">Chattogram</option>
+                            <option value="Sylhet">Sylhet</option>
+                            <option value="Rajshahi">Rajshahi</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Event Date *</label>
+                    <input type="date" id="new-ev-date" required value="2026-12-05"
+                        class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Description *</label>
+                    <textarea id="new-ev-desc" rows="2" required placeholder="Describe mission objectives and impact..."
+                        class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm"></textarea>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                    <div class="text-xs font-bold text-slate-700">Primary Shift Definition</div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <input type="text" id="new-ev-shift-name" required placeholder="Shift Role Name"
+                            value="Field Operations Crew"
+                            class="col-span-2 px-3 py-1.5 rounded-lg border border-slate-200 text-xs" />
+                        <input type="number" id="new-ev-shift-spots" required min="1" max="100" value="15"
+                            class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs" />
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('create-event-modal')"
+                        class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Cancel</button>
+                    <button type="submit"
+                        class="px-5 py-2 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-700 text-white">Submit
+                        for Admin Approval</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. Micro-Donation Modal (Audited Financial Aid Hub) -->
+    <div id="donate-aid-modal"
+        class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700"><i
+                            class="fa-solid fa-shield-check"></i> Auditor-Verified Escrow</span>
+                    <h3 id="aid-modal-title" class="text-lg font-extrabold text-slate-900 mt-0.5">Campaign Title</h3>
+                </div>
+                <button onclick="closeModal('donate-aid-modal')" class="text-slate-400 hover:text-slate-700"><i
+                        class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="submitAidDonation(event)" class="space-y-4">
+                <input type="hidden" id="aid-modal-id" />
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">Select Contribution Amount
+                        (USD)</label>
+                    <div class="grid grid-cols-4 gap-2 mb-2">
+                        <button type="button" onclick="document.getElementById('aid-amount').value=10"
+                            class="py-2 rounded-lg border border-slate-200 text-xs font-bold hover:border-emerald-600 hover:bg-emerald-50">$10</button>
+                        <button type="button" onclick="document.getElementById('aid-amount').value=25"
+                            class="py-2 rounded-lg border border-slate-200 text-xs font-bold hover:border-emerald-600 hover:bg-emerald-50">$25</button>
+                        <button type="button" onclick="document.getElementById('aid-amount').value=50"
+                            class="py-2 rounded-lg border border-slate-200 text-xs font-bold hover:border-emerald-600 hover:bg-emerald-50">$50</button>
+                        <button type="button" onclick="document.getElementById('aid-amount').value=100"
+                            class="py-2 rounded-lg border border-slate-200 text-xs font-bold hover:border-emerald-600 hover:bg-emerald-50">$100</button>
+                    </div>
+                    <input type="number" id="aid-amount" required min="1" value="25"
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold" />
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Donor Display Name (Optional)</label>
+                    <input type="text" id="aid-donor-name" placeholder="Anonymous Supporter"
+                        class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl text-xs text-slate-600 flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-emerald-600"></i>
+                    <span>Funds are disbursed directly to the verified hospital/institution invoice upon milestone
+                        completion.</span>
+                </div>
+                <button type="submit"
+                    class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow">
+                    Complete Audited Contribution
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container"
+        class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- ===================================================================== -->
+    <!-- MODULAR VANILLA JAVASCRIPT APPLICATION STATE & CONTROLLERS            -->
+    <!-- ===================================================================== -->
+    <script>
+        // -----------------------------------------------------------------------
+        // 1. CENTRALIZED APPLICATION STATE (MOCK DATABASE)
+        // -----------------------------------------------------------------------
+        const AppState = {
+            currentView: 'home-view',
+            activeRole: 'volunteer',
+            eventsPage: 1,
+            eventsPerPage: 6,
+            selectedEventId: null,
+
+            // Events & Granular Shifts
+            events: [
+                {
+                    id: 'EV-101',
+                    title: 'Urban Tree Plantation & Canopy Drive',
+                    org: 'Green Dhaka Initiative',
+                    category: 'Environment',
+                    location: 'Dhaka',
+                    date: '2026-11-22',
+                    status: 'Approved',
+                    image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+                    description: 'Join our urban reforestation campaign across Hatirjheel and Dhanmondi Lake corridors. Together we will plant 1,200 native saplings, install protective bamboo guards, and geotag each tree for long-term survival tracking.',
+                    requirements: ['Age 16+', 'Comfortable working outdoors', 'Bring reusable water bottle', 'Closed-toe shoes required'],
+                    shifts: [
+                        { id: 'SH-1', role: 'Ground Planting Crew', time: '07:30 AM - 11:30 AM', total: 25, filled: 19 },
+                        { id: 'SH-2', role: 'Desk & QR Check-In Lead', time: '07:00 AM - 12:00 PM', total: 4, filled: 3 },
+                        { id: 'SH-3', role: 'Sapling & Tool Logistics Runner', time: '08:00 AM - 12:00 PM', total: 8, filled: 6 }
+                    ]
+                },
+                {
+                    id: 'EV-102',
+                    title: 'Winter Blanket & Ration Kit Packaging',
+                    org: 'Northern Relief Coalition',
+                    category: 'Relief & Goods Drive',
+                    location: 'Dhaka',
+                    date: '2026-11-26',
+                    status: 'Approved',
+                    image: 'https://images.unsplash.com/photo-1593113630400-ea4288922497?auto=format&fit=crop&w=800&q=80',
+                    description: 'Sort, quality-check, and vacuum-pack 2,500 winter relief bundles received from our regional drop-off hubs before dispatch to northern districts.',
+                    requirements: ['Ability to lift 10kg boxes', 'Hair tie / hygiene compliance', 'Punctual shift arrival'],
+                    shifts: [
+                        { id: 'SH-4', role: 'Ration & Apparel Sorting Line', time: '09:00 AM - 01:00 PM', total: 30, filled: 22 },
+                        { id: 'SH-5', role: 'Barcode Tagging & Pallet Lead', time: '10:00 AM - 02:00 PM', total: 6, filled: 4 }
+                    ]
+                },
+                {
+                    id: 'EV-103',
+                    title: 'Weekend STEM & Literacy Bootcamp',
+                    org: 'Alokito Pathshala Foundation',
+                    category: 'Education',
+                    location: 'Chattogram',
+                    date: '2026-11-29',
+                    status: 'Approved',
+                    image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80',
+                    description: 'Mentor 180 underprivileged primary and middle-school students in foundational math, English reading, and interactive science kits.',
+                    requirements: ['Undergraduate student or graduate', 'Patience with children', 'Orientation call attendance'],
+                    shifts: [
+                        { id: 'SH-6', role: 'Junior Math & Science Mentor', time: '09:30 AM - 01:30 PM', total: 15, filled: 11 },
+                        { id: 'SH-7', role: 'Student Attendance & Kit Coordinator', time: '09:00 AM - 01:00 PM', total: 5, filled: 5 }
+                    ]
+                },
+                {
+                    id: 'EV-104',
+                    title: 'Free Maternal & Pediatric Health Camp',
+                    org: 'Shasthya Seba Trust',
+                    category: 'Health',
+                    location: 'Sylhet',
+                    date: '2026-12-02',
+                    status: 'Approved',
+                    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80',
+                    description: 'Support licensed physicians in delivering free prenatal checkups, pediatric vaccinations, and essential medicine kits in flood-affected Sylhet unions.',
+                    requirements: ['Medical/Nursing student preferred for triage', 'Bengali fluency', 'Mask worn on-site'],
+                    shifts: [
+                        { id: 'SH-8', role: 'Patient Triage & Vitals Assistant', time: '08:30 AM - 02:30 PM', total: 12, filled: 8 },
+                        { id: 'SH-9', role: 'Pharmacy Crowd & Queue Manager', time: '08:30 AM - 02:30 PM', total: 8, filled: 5 }
+                    ]
+                },
+                {
+                    id: 'EV-105',
+                    title: 'Padma Riverbank Plastic Cleanup',
+                    org: 'Clean Rivers Network',
+                    category: 'Environment',
+                    location: 'Rajshahi',
+                    date: '2026-12-06',
+                    status: 'Approved',
+                    image: 'https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?auto=format&fit=crop&w=800&q=80',
+                    description: 'High-impact shoreline cleanup and microplastic audit along a 4km stretch of the Padma riverbank, partnering with local recycling facilities.',
+                    requirements: ['Gloves & tongs provided', 'Sun protection advised', 'Age 18+'],
+                    shifts: [
+                        { id: 'SH-10', role: 'Shoreline Collection Team', time: '07:00 AM - 11:00 AM', total: 40, filled: 28 },
+                        { id: 'SH-11', role: 'Waste Weighing & Data Logger', time: '07:30 AM - 11:30 AM', total: 6, filled: 3 }
+                    ]
+                },
+                {
+                    id: 'EV-106',
+                    title: 'Community Kitchen Hot Meal Distribution',
+                    org: 'Ahare Bangladesh',
+                    category: 'Relief & Goods Drive',
+                    location: 'Dhaka',
+                    date: '2026-12-10',
+                    status: 'Pending Approval',
+                    image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80',
+                    description: 'Prepare and distribute 800 nutritious hot meals to daily wage earners and hospital attendants near Dhaka Medical.',
+                    requirements: ['Food safety hygiene', 'Closed shoes'],
+                    shifts: [
+                        { id: 'SH-12', role: 'Meal Box Assembly & Distribution', time: '11:00 AM - 03:00 PM', total: 20, filled: 0 }
+                    ]
+                }
+            ],
+
+            // Volunteer Shift Applications
+            shiftApplications: [
+                { id: 'APP-501', eventId: 'EV-101', eventTitle: 'Urban Tree Plantation & Canopy Drive', shiftRole: 'Ground Planting Crew', date: '2026-11-22', applicant: 'Amina Chowdhury', email: 'amina.c@volunteer.org', status: 'Accepted', checkedIn: true },
+                { id: 'APP-502', eventId: 'EV-102', eventTitle: 'Winter Blanket & Ration Kit Packaging', shiftRole: 'Ration & Apparel Sorting Line', date: '2026-11-26', applicant: 'Amina Chowdhury', email: 'amina.c@volunteer.org', status: 'Pending', checkedIn: false },
+                { id: 'APP-503', eventId: 'EV-101', eventTitle: 'Urban Tree Plantation & Canopy Drive', shiftRole: 'Desk & QR Check-In Lead', date: '2026-11-22', applicant: 'Rafiqul Hasan', email: 'rafiq@example.com', status: 'Pending', checkedIn: false },
+                { id: 'APP-504', eventId: 'EV-103', eventTitle: 'Weekend STEM & Literacy Bootcamp', shiftRole: 'Junior Math & Science Mentor', date: '2026-11-29', applicant: 'Sadia Islam', email: 'sadia@example.com', status: 'Accepted', checkedIn: false }
+            ],
+
+            // In-Kind Goods Packages
+            packages: [
+                { id: 'PKG-8841', donor: 'Tariqul Islam', category: 'Winter Clothes', qty: '25 Jackets (2 Boxes)', condition: 'Gently Used (Washed & Clean)', method: 'Self Drop-Off at Regional Hub', address: 'N/A', hub: 'Dhaka Central Hub (Tejgaon)', datetime: '2026-11-14 10:30', status: 'QC Passed', driver: 'Assigned: Kamal (Van #04)' },
+                { id: 'PKG-8842', donor: 'Nusrat Jahan', category: 'Dry Ration/Food', qty: '50kg Rice & Lentils', condition: 'New / Sealed', method: 'Volunteer Driver Home Pickup', address: 'House 22, Banani Block C', hub: 'Uttara North Relief Depot', datetime: '2026-11-15 14:00', status: 'Awaiting Drop-off', driver: 'Unassigned' },
+                { id: 'PKG-8843', donor: 'Farhan Ahmed', category: 'Medical Kits', qty: '15 First-Aid Boxes', condition: 'New / Sealed', method: 'Self Drop-Off at Regional Hub', address: 'N/A', hub: 'Dhaka Central Hub (Tejgaon)', datetime: '2026-11-12 09:15', status: 'Dispatched', driver: 'Delivered to EV-102' },
+                { id: 'PKG-8844', donor: 'Mehedi Hasan', category: 'Baby Supplies', qty: '4 Cartons Diapers & Formula', condition: 'New / Sealed', method: 'Volunteer Driver Home Pickup', address: 'Flat 4B, Mirpur DOHS', hub: 'Dhaka Central Hub (Tejgaon)', datetime: '2026-11-16 11:00', status: 'Awaiting Drop-off', driver: 'Unassigned' }
+            ],
+
+            // Regional Drop-Off Hubs & Inventory
+            hubs: [
+                { id: 'HUB-1', name: 'Dhaka Central Hub (Tejgaon)', address: 'Plot 42, Tejgaon Industrial Area, Dhaka 1208', hours: 'Daily: 08:00 AM – 08:00 PM', capacity: 74, manager: 'Engr. Mahmudul Hasan', accepted: ['Winter Clothes', 'Dry Ration/Food', 'Medical Kits', 'Baby Supplies'], stock: { 'Winter Jackets': 420, 'Dry Ration Packs': 680, 'Medical Kits': 145 } },
+                { id: 'HUB-2', name: 'Uttara North Relief Depot', address: 'Sector 11, Road 18, House 9, Uttara, Dhaka', hours: 'Sat–Thu: 09:00 AM – 06:00 PM', capacity: 48, manager: 'Shamima Nasrin', accepted: ['Winter Clothes', 'General Apparel', 'Baby Supplies'], stock: { 'Winter Jackets': 210, 'Dry Ration Packs': 190, 'Medical Kits': 60 } },
+                { id: 'HUB-3', name: 'Chattogram Port Warehouse', address: '214 Agrabad Commercial Area, Chattogram', hours: 'Daily: 08:30 AM – 07:00 PM', capacity: 62, manager: 'Tanvir Chowdhury', accepted: ['Dry Ration/Food', 'Medical Kits', 'Winter Clothes'], stock: { 'Winter Jackets': 310, 'Dry Ration Packs': 890, 'Medical Kits': 210 } },
+                { id: 'HUB-4', name: 'Sylhet Flood Response Center', address: 'Subhanighat Main Road, Sylhet 3100', hours: '24/7 Emergency Intake', capacity: 85, manager: 'Dr. Rezaul Karim', accepted: ['Dry Ration/Food', 'Medical Kits', 'Baby Supplies', 'Winter Clothes'], stock: { 'Winter Jackets': 540, 'Dry Ration Packs': 1120, 'Medical Kits': 320 } }
+            ],
+
+            // Financial & Goods Aid Requests (Approved -> Public Aid Hub; Pending -> Auditor Queue)
+            aidRequests: [
+                {
+                    id: 'AID-301',
+                    applicant: 'Rahima Begum (on behalf of minor son)',
+                    title: 'Pediatric Congenital Heart Surgery Support',
+                    category: 'Medical Emergencies',
+                    targetAmount: 3200,
+                    raisedAmount: 2480,
+                    status: 'Approved',
+                    auditorNote: 'Verified National Heart Foundation surgical estimate #NHF-9921 & NID.',
+                    proofDoc: 'NHF_Surgical_Invoice_2026.pdf',
+                    justification: '7-year-old Rafi requires urgent septal defect closure surgery. Family income from day labor cannot cover surgical consumables and ICU recovery costs.'
+                },
+                {
+                    id: 'AID-302',
+                    applicant: 'Char Fasson Girls High School Committee',
+                    title: 'Solar Micro-Grid & Digital Lab for Coastal School',
+                    category: 'Education',
+                    targetAmount: 4500,
+                    raisedAmount: 3150,
+                    status: 'Approved',
+                    auditorNote: 'Verified District Education Officer endorsement & vendor quotation.',
+                    proofDoc: 'DEO_Endorsement_SolarQuote.pdf',
+                    justification: 'Frequent grid outages disrupt ICT classes for 340 coastal students. Funds directly pay vendor for 5kW solar installation.'
+                },
+                {
+                    id: 'AID-303',
+                    applicant: 'Sunamganj Haor Farmer Cooperative',
+                    title: 'Emergency Seed & Dry Ration Relief for 120 Families',
+                    category: 'Food Relief',
+                    targetAmount: 2800,
+                    raisedAmount: 1960,
+                    status: 'Approved',
+                    auditorNote: 'Verified Union Parishad flood loss registry & cooperative bank escrow.',
+                    proofDoc: 'UP_Flood_Loss_Registry.pdf',
+                    justification: 'Flash floods submerged early harvest. Direct procurement of fortified rice, lentils, and saline packets for 120 displaced households.'
+                },
+                {
+                    id: 'AID-304',
+                    applicant: 'Kamrul Hasan',
+                    title: 'Post-Accident Orthopedic Limb Prosthesis',
+                    category: 'Medical Emergencies',
+                    targetAmount: 1850,
+                    raisedAmount: 0,
+                    status: 'Pending Audit',
+                    auditorNote: 'Awaiting invoice cross-check with CRP Savar.',
+                    proofDoc: 'CRP_Prosthetic_Estimate_441.pdf',
+                    justification: 'Lost lower limb in highway transport accident; prosthetic fitting enables return to tailoring livelihood.'
+                }
+            ],
+
+            // Live Field Alerts
+            fieldAlerts: [
+                { id: 1, time: '10:15 AM', msg: 'Zone B sapling delivery truck arrived at Hatirjheel South Gate.', level: 'info' }
+            ]
+        };
+
+        // -----------------------------------------------------------------------
+        // 2. SPA ROUTER & NAVIGATION
+        // -----------------------------------------------------------------------
+        function navigateTo(viewId) {
+            AppState.currentView = viewId;
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(viewId);
+            if (target) target.classList.add('active');
+
+            // Update active nav highlighting
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if (btn.dataset.nav === viewId) {
+                    btn.classList.add('bg-emerald-50', 'text-emerald-700');
+                } else if (btn.dataset.nav !== 'dashboard-view') {
+                    btn.classList.remove('bg-emerald-50', 'text-emerald-700');
+                }
+            });
+
+            // Trigger view-specific renders
+            if (viewId === 'events-view') renderEvents();
+            if (viewId === 'hubs-view') renderHubs();
+            if (viewId === 'aid-view') renderAidHub();
+            if (viewId === 'dashboard-view') renderWorkspace();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // -----------------------------------------------------------------------
+        // 3. TOAST NOTIFICATION SYSTEM
+        // -----------------------------------------------------------------------
+        function showToast(title, message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const colors = {
+                success: 'border-emerald-500 bg-white text-slate-900',
+                info: 'border-blue-500 bg-white text-slate-900',
+                warning: 'border-amber-500 bg-white text-slate-900',
+                danger: 'border-rose-500 bg-white text-slate-900'
+            };
+            const icons = {
+                success: '<i class="fa-solid fa-circle-check text-emerald-600 text-lg"></i>',
+                info: '<i class="fa-solid fa-circle-info text-blue-600 text-lg"></i>',
+                warning: '<i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg"></i>',
+                danger: '<i class="fa-solid fa-circle-xmark text-rose-600 text-lg"></i>'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto border-l-4 ${colors[type]} rounded-xl shadow-xl p-4 flex items-start gap-3 transition-all duration-300 transform translate-y-2 opacity-0 border border-slate-200`;
+            toast.innerHTML = `
+        <div class="mt-0.5">${icons[type]}</div>
+        <div class="flex-1">
+          <div class="font-bold text-sm">${title}</div>
+          <div class="text-xs text-slate-600 mt-0.5">${message}</div>
+        </div>
+      `;
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3800);
+        }
+
+        // -----------------------------------------------------------------------
+        // 4. OPPORTUNITIES SEARCH, FILTER & DETAIL VIEW
+        // -----------------------------------------------------------------------
+        function applyEventFilters() {
+            AppState.eventsPage = 1;
+            renderEvents();
+        }
+
+        function resetEventFilters() {
+            document.getElementById('filter-keyword').value = '';
+            document.getElementById('filter-category').value = 'ALL';
+            document.getElementById('filter-location').value = 'ALL';
+            document.getElementById('filter-date').value = '';
+            applyEventFilters();
+        }
+
+        function renderEvents() {
+            const kw = document.getElementById('filter-keyword').value.toLowerCase().trim();
+            const cat = document.getElementById('filter-category').value;
+            const loc = document.getElementById('filter-location').value;
+            const dt = document.getElementById('filter-date').value;
+
+            const filtered = AppState.events.filter(ev => {
+                if (ev.status !== 'Approved') return false;
+                const matchKw = !kw || ev.title.toLowerCase().includes(kw) || ev.org.toLowerCase().includes(kw) || ev.description.toLowerCase().includes(kw);
+                const matchCat = cat === 'ALL' || ev.category === cat;
+                const matchLoc = loc === 'ALL' || ev.location === loc;
+                const matchDate = !dt || ev.date >= dt;
+                return matchKw && matchCat && matchLoc && matchDate;
+            });
+
+            document.getElementById('events-count-label').textContent = `Showing ${filtered.length} verified ${filtered.length === 1 ? 'opportunity' : 'opportunities'}`;
+
+            const start = (AppState.eventsPage - 1) * AppState.eventsPerPage;
+            const paginated = filtered.slice(start, start + AppState.eventsPerPage);
+            const grid = document.getElementById('events-grid');
+
+            if (paginated.length === 0) {
+                grid.innerHTML = `
+          <div class="col-span-full bg-white rounded-2xl border border-slate-200 p-12 text-center">
+            <i class="fa-solid fa-magnifying-glass text-3xl text-slate-300 mb-3"></i>
+            <h3 class="text-lg font-bold text-slate-900">No matching opportunities found</h3>
+            <p class="text-sm text-slate-500 mt-1">Try adjusting your category, location, or date filters.</p>
+          </div>`;
+                document.getElementById('events-pagination').innerHTML = '';
+                return;
+            }
+
+            grid.innerHTML = paginated.map(ev => {
+                const totalSpots = ev.shifts.reduce((acc, s) => acc + s.total, 0);
+                const filledSpots = ev.shifts.reduce((acc, s) => acc + s.filled, 0);
+                const spotsLeft = Math.max(0, totalSpots - filledSpots);
+
+                return `
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
+            <div class="relative h-44 bg-slate-200">
+              <img src="${ev.image}" alt="${ev.title}" class="w-full h-full object-cover" />
+              <span class="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-slate-900/80 backdrop-blur text-white text-xs font-semibold">${ev.category}</span>
+              <span class="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold shadow">${spotsLeft} spots left</span>
+            </div>
+            <div class="p-5 flex-grow flex flex-col">
+              <div class="text-xs font-semibold text-emerald-700 mb-1">${ev.org}</div>
+              <h3 class="text-lg font-bold text-slate-900 leading-snug mb-2">${ev.title}</h3>
+              <p class="text-xs text-slate-600 line-clamp-2 mb-4">${ev.description}</p>
+              <div class="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 mb-4">
+                <span><i class="fa-solid fa-location-dot text-emerald-600 mr-1"></i>${ev.location}</span>
+                <span><i class="fa-regular fa-calendar text-emerald-600 mr-1"></i>${ev.date}</span>
+                <span><i class="fa-solid fa-users-gear text-emerald-600 mr-1"></i>${ev.shifts.length} Shifts</span>
+              </div>
+              <button onclick="openEventDetail('${ev.id}')" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white font-semibold text-sm transition">
+                View Details & Shifts <i class="fa-solid fa-arrow-right ml-1"></i>
+              </button>
+            </div>
+          </div>
+        `;
+            }).join('');
+
+            // Render pagination
+            const totalPages = Math.ceil(filtered.length / AppState.eventsPerPage);
+            const pagEl = document.getElementById('events-pagination');
+            if (totalPages <= 1) {
+                pagEl.innerHTML = '';
+            } else {
+                let btns = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    btns += `<button onclick="AppState.eventsPage=${i}; renderEvents()" class="px-3.5 py-1.5 rounded-lg text-sm font-bold ${i === AppState.eventsPage ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}">${i}</button>`;
+                }
+                pagEl.innerHTML = btns;
+            }
+        }
+
+        function openEventDetail(eventId) {
+            AppState.selectedEventId = eventId;
+            const ev = AppState.events.find(e => e.id === eventId);
+            if (!ev) return;
+
+            const container = document.getElementById('event-detail-container');
+            container.innerHTML = `
+        <button onclick="navigateTo('events-view')" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-emerald-600 mb-5">
+          <i class="fa-solid fa-arrow-left"></i> Back to All Opportunities
+        </button>
+
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          <div class="relative h-64 sm:h-80 bg-slate-900">
+            <img src="${ev.image}" alt="${ev.title}" class="w-full h-full object-cover opacity-80" />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent"></div>
+            <div class="absolute bottom-6 left-6 right-6 text-white">
+              <div class="flex flex-wrap items-center gap-2 mb-2">
+                <span class="px-3 py-1 rounded-full bg-emerald-600 text-xs font-bold">${ev.category}</span>
+                <span class="px-3 py-1 rounded-full bg-white/20 backdrop-blur text-xs font-semibold"><i class="fa-solid fa-shield-check mr-1"></i>Verified Host: ${ev.org}</span>
+              </div>
+              <h1 class="text-2xl sm:text-4xl font-extrabold">${ev.title}</h1>
+              <div class="flex flex-wrap gap-4 text-xs sm:text-sm text-slate-200 mt-2">
+                <span><i class="fa-solid fa-location-dot text-emerald-400 mr-1.5"></i>${ev.location}</span>
+                <span><i class="fa-regular fa-calendar text-emerald-400 mr-1.5"></i>${ev.date}</span>
+                <span><i class="fa-solid fa-hashtag text-emerald-400 mr-1"></i>${ev.id}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-6">
+              <div>
+                <h2 class="text-lg font-bold text-slate-900 mb-2">About the Event</h2>
+                <p class="text-sm text-slate-600 leading-relaxed">${ev.description}</p>
+              </div>
+
+              <div>
+                <h2 class="text-lg font-bold text-slate-900 mb-3">Granular Shift Roles Breakdown</h2>
+                <div class="space-y-3">
+                  ${ev.shifts.map(sh => {
+                const left = Math.max(0, sh.total - sh.filled);
+                const isFull = left === 0;
+                return `
+                      <div class="p-4 rounded-xl border ${isFull ? 'border-slate-200 bg-slate-50' : 'border-emerald-200 bg-emerald-50/30'} flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                          <div class="flex items-center gap-2">
+                            <span class="font-bold text-slate-900 text-sm">${sh.role}</span>
+                            <span class="px-2 py-0.5 rounded-full text-xs font-bold ${isFull ? 'bg-slate-200 text-slate-600' : 'bg-emerald-100 text-emerald-800'}">
+                              ${isFull ? 'Shift Full' : `${left} of ${sh.total} slots left`}
+                            </span>
+                          </div>
+                          <div class="text-xs text-slate-500 mt-1"><i class="fa-regular fa-clock mr-1"></i>${sh.time}</div>
+                        </div>
+                        <button ${isFull ? 'disabled' : `onclick="openShiftModal('${ev.id}', '${sh.id}')"`} class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap ${isFull ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'}">
+                          ${isFull ? 'Waitlist Full' : 'Apply Shift'}
+                        </button>
+                      </div>
+                    `;
+            }).join('')}
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-6">
+              <div class="bg-slate-50 rounded-xl p-5 border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-900 mb-3">Volunteer Requirements</h3>
+                <ul class="space-y-2 text-xs text-slate-600">
+                  ${ev.requirements.map(r => `<li class="flex items-start gap-2"><i class="fa-solid fa-check text-emerald-600 mt-0.5"></i><span>${r}</span></li>`).join('')}
+                </ul>
+              </div>
+              <div class="bg-emerald-900 text-white rounded-xl p-5">
+                <div class="text-xs font-bold uppercase text-emerald-300 mb-1">QR Attendance Protocol</div>
+                <p class="text-xs text-emerald-100 leading-relaxed">Accepted volunteers receive a personal QR Check-In pass in their Volunteer Workspace to log verified service hours at the venue.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+            navigateTo('event-detail-view');
+        }
+
+        function openShiftModal(eventId, shiftId) {
+            const ev = AppState.events.find(e => e.id === eventId);
+            const sh = ev.shifts.find(s => s.id === shiftId);
+            document.getElementById('modal-event-id').value = eventId;
+            document.getElementById('modal-shift-id').value = shiftId;
+            document.getElementById('modal-shift-event-title').textContent = ev.title;
+            document.getElementById('modal-shift-role-name').textContent = `Shift Role: ${sh.role} (${sh.time})`;
+            document.getElementById('shift-modal').classList.remove('hidden');
+        }
+
+        function submitShiftApplication(e) {
+            e.preventDefault();
+            const eventId = document.getElementById('modal-event-id').value;
+            const shiftId = document.getElementById('modal-shift-id').value;
+            const name = document.getElementById('app-fullname').value;
+            const email = document.getElementById('app-email').value;
+
+            const ev = AppState.events.find(item => item.id === eventId);
+            const sh = ev.shifts.find(s => s.id === shiftId);
+
+            if (sh.filled < sh.total) {
+                sh.filled += 1;
+            }
+
+            AppState.shiftApplications.unshift({
+                id: 'APP-' + Math.floor(505 + Math.random() * 490),
+                eventId: ev.id,
+                eventTitle: ev.title,
+                shiftRole: sh.role,
+                date: ev.date,
+                applicant: name,
+                email: email,
+                status: 'Pending',
+                checkedIn: false
+            });
+
+            closeModal('shift-modal');
+            showToast('Shift Application Submitted', `Applied for "${sh.role}". Track status in your Volunteer Workspace.`);
+            openEventDetail(eventId);
+        }
+
+        // -----------------------------------------------------------------------
+        // 5. AUTHENTICATION & ONBOARDING
+        // -----------------------------------------------------------------------
+        let authMode = 'login';
+        function toggleAuthMode(mode) {
+            authMode = mode;
+            const isSignup = mode === 'signup';
+            document.getElementById('signup-fields').classList.toggle('hidden', !isSignup);
+            document.getElementById('auth-heading').textContent = isSignup ? 'Create Your Account' : 'Welcome Back';
+            document.getElementById('auth-sub').textContent = isSignup ? 'Join as a verified volunteer, donor, organization, or beneficiary' : 'Access your personalized impact workspace';
+            document.getElementById('auth-submit-btn').textContent = isSignup ? 'Register & Launch Workspace' : 'Sign In & Launch Workspace';
+
+            document.getElementById('tab-login').className = !isSignup ? 'py-4 text-sm font-bold text-emerald-700 bg-white border-b-2 border-emerald-600' : 'py-4 text-sm font-semibold text-slate-500 hover:text-slate-800';
+            document.getElementById('tab-signup').className = isSignup ? 'py-4 text-sm font-bold text-emerald-700 bg-white border-b-2 border-emerald-600' : 'py-4 text-sm font-semibold text-slate-500 hover:text-slate-800';
+        }
+
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            if (authMode === 'signup') {
+                const selectedRole = document.querySelector('input[name="auth-role"]:checked').value;
+                switchRole(selectedRole);
+                showToast('Account Created', `Registered ${email} under ${selectedRole.toUpperCase()} role.`);
+            } else {
+                showToast('Signed In Successfully', `Authenticated as ${email}.`);
+            }
+            document.getElementById('header-auth-label').textContent = email.split('@')[0];
+            navigateTo('dashboard-view');
+        }
+
+        // -----------------------------------------------------------------------
+        // 6. IN-KIND GOODS DONATION TERMINAL
+        // -----------------------------------------------------------------------
+        function togglePickupAddress(show) {
+            const el = document.getElementById('pickup-address-field');
+            const input = document.getElementById('pledge-address');
+            el.classList.toggle('hidden', !show);
+            input.required = show;
+        }
+
+        function submitGoodsPledge(e) {
+            e.preventDefault();
+            const donor = document.getElementById('pledge-donor').value;
+            const category = document.getElementById('pledge-category').value;
+            const qty = document.getElementById('pledge-qty').value;
+            const condition = document.getElementById('pledge-condition').value;
+            const method = document.querySelector('input[name="handoff-method"]:checked').value;
+            const address = document.getElementById('pledge-address').value || 'Self Drop-Off';
+            const hub = document.getElementById('pledge-hub').value;
+            const datetime = document.getElementById('pledge-datetime').value.replace('T', ' ');
+
+            const newId = 'PKG-' + Math.floor(8845 + Math.random() * 1100);
+            AppState.packages.unshift({
+                id: newId,
+                donor,
+                category,
+                qty,
+                condition,
+                method,
+                address,
+                hub,
+                datetime,
+                status: 'Awaiting Drop-off',
+                driver: method.includes('Pickup') ? 'Unassigned' : 'Self Delivery'
+            });
+
+            document.getElementById('qr-tag-code').textContent = newId;
+            document.getElementById('qr-tag-id').textContent = newId;
+            document.getElementById('qr-tag-status').textContent = 'Awaiting Drop-off';
+            document.getElementById('qr-tag-summary').innerHTML = `<strong>${category}</strong> (${qty})<br/>Target: ${hub}`;
+
+            showToast('Package QR Tag Generated', `Tag ${newId} registered. Track it in the In-Kind Donor Workspace.`);
+        }
+
+        // -----------------------------------------------------------------------
+        // 7. REGIONAL DROP-OFF HUBS DIRECTORY
+        // -----------------------------------------------------------------------
+        function renderHubs() {
+            const grid = document.getElementById('hubs-grid');
+            grid.innerHTML = AppState.hubs.map(hub => {
+                const capColor = hub.capacity > 80 ? 'bg-rose-500' : hub.capacity > 60 ? 'bg-amber-500' : 'bg-emerald-500';
+                return `
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between gap-4 mb-3">
+                <div>
+                  <span class="text-xs font-mono font-bold text-slate-400">${hub.id}</span>
+                  <h3 class="text-lg font-extrabold text-slate-900">${hub.name}</h3>
+                </div>
+                <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200">Active Hub</span>
+              </div>
+              <div class="space-y-1.5 text-xs text-slate-600 mb-4">
+                <div><i class="fa-solid fa-location-dot text-emerald-600 w-4"></i> ${hub.address}</div>
+                <div><i class="fa-regular fa-clock text-emerald-600 w-4"></i> ${hub.hours}</div>
+                <div><i class="fa-solid fa-user-tie text-emerald-600 w-4"></i> Hub Manager: <strong>${hub.manager}</strong></div>
+              </div>
+
+              <!-- Storage Capacity Meter -->
+              <div class="mb-4">
+                <div class="flex justify-between text-xs font-semibold mb-1">
+                  <span class="text-slate-700">Live Storage Capacity</span>
+                  <span class="text-slate-900 font-bold">${hub.capacity}% Occupied</span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full ${capColor} rounded-full transition-all" style="width: ${hub.capacity}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-xs font-bold text-slate-700 mb-2">Accepted Item Categories:</div>
+              <div class="flex flex-wrap gap-1.5">
+                ${hub.accepted.map(cat => `<span class="px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 text-xs font-medium">${cat}</span>`).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+            }).join('');
+        }
+
+        // -----------------------------------------------------------------------
+        // 8. AUDITED FINANCIAL AID HUB
+        // -----------------------------------------------------------------------
+        function renderAidHub() {
+            const grid = document.getElementById('aid-campaigns-grid');
+            const approved = AppState.aidRequests.filter(a => a.status === 'Approved');
+
+            grid.innerHTML = approved.map(camp => {
+                const pct = Math.min(100, Math.round((camp.raisedAmount / camp.targetAmount) * 100));
+                return `
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 text-xs font-bold">${camp.category}</span>
+                <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                  <i class="fa-solid fa-shield-check"></i> Auditor Verified
+                </span>
+              </div>
+              <h3 class="text-lg font-extrabold text-slate-900 mb-1">${camp.title}</h3>
+              <div class="text-xs text-slate-500 mb-3">Beneficiary: <strong class="text-slate-700">${camp.applicant}</strong></div>
+              <p class="text-xs text-slate-600 leading-relaxed mb-3">${camp.justification}</p>
+
+              <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 mb-4">
+                <div class="font-bold text-slate-800 mb-0.5"><i class="fa-solid fa-file-contract text-emerald-600 mr-1"></i>Audit Verification Note:</div>
+                ${camp.auditorNote}
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-bold mb-1.5">
+                <span class="text-emerald-700">$${camp.raisedAmount.toLocaleString()} raised</span>
+                <span class="text-slate-500">Goal: $${camp.targetAmount.toLocaleString()} (${pct}%)</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden mb-4">
+                <div class="h-full bg-emerald-600 rounded-full transition-all" style="width: ${pct}%"></div>
+              </div>
+              <button onclick="openAidDonateModal('${camp.id}')" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition">
+                Donate to Verified Campaign
+              </button>
+            </div>
+          </div>
+        `;
+            }).join('');
+        }
+
+        function openAidDonateModal(aidId) {
+            const camp = AppState.aidRequests.find(a => a.id === aidId);
+            document.getElementById('aid-modal-id').value = camp.id;
+            document.getElementById('aid-modal-title').textContent = camp.title;
+            document.getElementById('donate-aid-modal').classList.remove('hidden');
+        }
+
+        function submitAidDonation(e) {
+            e.preventDefault();
+            const id = document.getElementById('aid-modal-id').value;
+            const amt = parseFloat(document.getElementById('aid-amount').value);
+            const camp = AppState.aidRequests.find(a => a.id === id);
+            if (camp && amt > 0) {
+                camp.raisedAmount += amt;
+            }
+            closeModal('donate-aid-modal');
+            showToast('Audited Contribution Recorded', `$${amt} allocated to "${camp.title}".`);
+            renderAidHub();
+        }
+
+        // -----------------------------------------------------------------------
+        // 9. MULTI-ROLE WORKSPACE PORTAL (ALL 10 ROLES)
+        // -----------------------------------------------------------------------
+        function switchRole(roleKey) {
+            AppState.activeRole = roleKey;
+            document.getElementById('role-switcher').value = roleKey;
+            const mirror = document.getElementById('ws-role-mirror');
+            if (mirror) mirror.value = roleKey;
+
+            if (AppState.currentView === 'dashboard-view') {
+                renderWorkspace();
+            } else {
+                showToast('Active Role Switched', `Workspace configured for ${roleKey.replace('_', ' ').toUpperCase()}.`, 'info');
+            }
+        }
+
+        function renderWorkspace() {
+            const role = AppState.activeRole;
+            const titleEl = document.getElementById('ws-title');
+            const badgeEl = document.getElementById('ws-badge');
+            const subEl = document.getElementById('ws-subtitle');
+            const iconBox = document.getElementById('ws-icon-box');
+            const container = document.getElementById('workspace-dynamic-content');
+
+            const roleMeta = {
+                volunteer: { title: 'Volunteer Workspace', badge: 'Field Crew • ID #VOL-904', sub: 'Track shift applications, withdraw pending requests, present QR Check-In badge, and view verified hours.', icon: 'fa-person-raising' },
+                donor: { title: 'In-Kind Donor Workspace', badge: 'Verified Goods Contributor', sub: 'Monitor pledged relief packages, warehouse drop-off statuses, and scannable Package QR tags.', icon: 'fa-box-open' },
+                beneficiary: { title: 'Beneficiary Aid Portal', badge: 'Applicant Verification Gate', sub: 'Submit financial or goods aid requests with mandatory justification, usage plans, and supporting bills.', icon: 'fa-hand-holding-medical' },
+                organization: { title: 'Organization / Event Host Workspace', badge: 'Green Dhaka Initiative', sub: 'Publish multi-shift community events and review/accept volunteer shift applications.', icon: 'fa-building-ngo' },
+                warehouse: { title: 'Regional Logistics & Warehouse Manager', badge: 'Dhaka Central Hub (Tejgaon)', sub: 'Monitor storage capacities and allocate/dispatch verified inventory to approved events.', icon: 'fa-warehouse' },
+                qc: { title: 'Quality Control (QC) Inspector Terminal', badge: 'Intake Screening Station #2', sub: 'Scan incoming Package Tag IDs to inspect item hygiene and certify stock as QC Passed or Rejected.', icon: 'fa-clipboard-check' },
+                transport: { title: 'Transport & Fleet Coordinator', badge: 'Dispatch & Routing Control', sub: 'Assign volunteer drivers to donor home-pickup requests and inter-hub transfers.', icon: 'fa-truck-fast' },
+                field_director: { title: 'Event Field Director (Live Ops)', badge: 'On-Site Command • EV-101', sub: 'Scan volunteer QR badges at event check-in, track live headcount, and broadcast site alerts.', icon: 'fa-walkie-talkie' },
+                auditor: { title: 'Financial Aid Auditor Queue', badge: 'Fraud Prevention & Compliance', sub: 'Inspect beneficiary invoices and identity proofs before approving campaigns for the public Financial Aid Hub.', icon: 'fa-file-shield' },
+                admin: { title: 'Volunteer Recruiter & Super Admin', badge: 'Platform Governance', sub: 'Approve/reject pending organization events, manage shift waitlists, and oversee system telemetry.', icon: 'fa-user-shield' }
+            };
+
+            const meta = roleMeta[role];
+            titleEl.textContent = meta.title;
+            badgeEl.textContent = meta.badge;
+            subEl.textContent = meta.sub;
+            iconBox.innerHTML = `<i class="fa-solid ${meta.icon}"></i>`;
+
+            // 1. VOLUNTEER WORKSPACE
+            if (role === 'volunteer') {
+                const myApps = AppState.shiftApplications.filter(a => a.applicant === 'Amina Chowdhury');
+                container.innerHTML = `
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-6">
+              <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                  <h3 class="font-bold text-slate-900">My Shift Applications</h3>
+                  <button onclick="navigateTo('events-view')" class="text-xs font-bold text-emerald-600 hover:underline">+ Find More Shifts</button>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                      <tr>
+                        <th class="p-3 rounded-l-lg">Event & Shift Role</th>
+                        <th class="p-3">Date</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3 rounded-r-lg text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                      ${myApps.map(app => {
+                    const statusStyles = {
+                        Accepted: 'bg-emerald-100 text-emerald-800',
+                        Pending: 'bg-amber-100 text-amber-800',
+                        Rejected: 'bg-rose-100 text-rose-800',
+                        Withdrawn: 'bg-slate-100 text-slate-500'
+                    };
+                    return `
+                          <tr>
+                            <td class="p-3">
+                              <div class="font-bold text-slate-900">${app.eventTitle}</div>
+                              <div class="text-xs text-slate-500">${app.shiftRole}</div>
+                            </td>
+                            <td class="p-3 text-xs text-slate-600">${app.date}</td>
+                            <td class="p-3"><span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${statusStyles[app.status]}">${app.status}</span></td>
+                            <td class="p-3 text-right">
+                              ${(app.status === 'Pending' || app.status === 'Accepted')
+                            ? `<button onclick="withdrawApplication('${app.id}')" class="px-3 py-1 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold">Withdraw</button>`
+                            : `<span class="text-xs text-slate-400">—</span>`}
+                            </td>
+                          </tr>
+                        `;
+                }).join('')}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Verified Impact & Certificates -->
+              <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <h3 class="font-bold text-slate-900 mb-3">Completed Hours & Impact Certificates</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                  <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-100">
+                    <div class="text-2xl font-extrabold text-emerald-700">36.5 hrs</div>
+                    <div class="text-xs text-slate-600 mt-0.5">QR-Verified Field Service</div>
+                  </div>
+                  <div class="p-4 rounded-xl bg-blue-50 border border-blue-100">
+                    <div class="text-2xl font-extrabold text-blue-700">7 Events</div>
+                    <div class="text-xs text-slate-600 mt-0.5">Completed Missions</div>
+                  </div>
+                  <div class="p-4 rounded-xl bg-amber-50 border border-amber-100">
+                    <div class="text-2xl font-extrabold text-amber-700">Gold Tier</div>
+                    <div class="text-xs text-slate-600 mt-0.5">98% Shift Attendance Rate</div>
+                  </div>
+                </div>
+                <button onclick="showToast('Certificate Downloaded', 'Verified PDF service transcript saved.')" class="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800">
+                  <i class="fa-solid fa-award text-amber-400 mr-1.5"></i> Download Verified Volunteer Transcript
+                </button>
+              </div>
+            </div>
+
+            <!-- Personal Check-In QR Badge -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm text-center self-start">
+              <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">On-Site Check-In Pass</span>
+              <h3 class="text-lg font-extrabold text-slate-900 mt-2">Amina Chowdhury</h3>
+              <p class="text-xs text-slate-500">Badge ID: VOL-904 • Verified Crew</p>
+              <div class="my-5 p-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-300">
+                <div class="w-40 h-40 mx-auto bg-white p-2 rounded-xl border border-slate-200">
+                  <div class="w-full h-full qr-box flex items-center justify-center">
+                    <span class="bg-white px-2 py-0.5 font-mono text-xs font-bold border border-slate-300 rounded">VOL-904</span>
+                  </div>
+                </div>
+              </div>
+              <p class="text-xs text-slate-500">Present this QR pass to the Event Field Director upon arrival to start your shift timer.</p>
+            </div>
+          </div>
+        `;
+            }
+
+            // 2. IN-KIND DONOR WORKSPACE
+            else if (role === 'donor') {
+                container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+              <div>
+                <h3 class="font-bold text-slate-900 text-lg">Pledged In-Kind Relief Packages</h3>
+                <p class="text-xs text-slate-500">Live chain-of-custody tracking from donor pledge to QC inspection and event dispatch.</p>
+              </div>
+              <button onclick="navigateTo('goods-donation-view')" class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 self-start">
+                + Pledge New Package
+              </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${AppState.packages.map(pkg => {
+                    const badgeMap = {
+                        'Awaiting Drop-off': 'bg-amber-100 text-amber-800',
+                        'QC Passed': 'bg-emerald-100 text-emerald-800',
+                        'QC Rejected': 'bg-rose-100 text-rose-800',
+                        'Dispatched': 'bg-blue-100 text-blue-800'
+                    };
+                    return `
+                  <div class="p-4 rounded-xl border border-slate-200 flex items-center justify-between gap-4">
+                    <div class="space-y-1">
+                      <div class="flex items-center gap-2">
+                        <span class="font-mono font-bold text-sm text-slate-900">${pkg.id}</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeMap[pkg.status] || 'bg-slate-100'}">${pkg.status}</span>
+                      </div>
+                      <div class="font-bold text-sm text-slate-800">${pkg.category} — ${pkg.qty}</div>
+                      <div class="text-xs text-slate-500"><i class="fa-solid fa-warehouse text-emerald-600 mr-1"></i>${pkg.hub}</div>
+                      <div class="text-xs text-slate-500"><i class="fa-solid fa-truck text-blue-600 mr-1"></i>${pkg.method} (${pkg.driver})</div>
+                    </div>
+                    <div class="w-20 h-20 shrink-0 bg-slate-50 border border-slate-200 rounded-lg p-1.5 flex items-center justify-center">
+                      <div class="w-full h-full qr-box flex items-center justify-center">
+                        <span class="bg-white text-[9px] font-mono font-bold px-1 border border-slate-300">${pkg.id.split('-')[1]}</span>
+                      </div>
+                    </div>
+                  </div>
+                `;
+                }).join('')}
+            </div>
+          </div>
+        `;
+            }
+
+            // 3. BENEFICIARY WORKSPACE
+            else if (role === 'beneficiary') {
+                container.innerHTML = `
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <form onsubmit="submitBeneficiaryRequest(event)" class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+              <h3 class="font-bold text-slate-900 text-lg border-b border-slate-100 pb-3">Submit Audited Financial / Goods Aid Application</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Applicant / Institution Name *</label>
+                  <input type="text" id="ben-name" required placeholder="Full Legal Name" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Aid Category *</label>
+                  <select id="ben-cat" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+                    <option value="Medical Emergencies">Medical Emergencies</option>
+                    <option value="Education">Education</option>
+                    <option value="Food Relief">Food Relief</option>
+                  </select>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Campaign Title *</label>
+                  <input type="text" id="ben-title" required placeholder="e.g., Urgent Dialysis Treatment Support" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Target Amount (USD) *</label>
+                  <input type="number" id="ben-amount" required min="50" placeholder="1500" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Detailed Justification & Fund Usage Plan *</label>
+                <textarea id="ben-just" rows="3" required placeholder="Explain exact medical/relief need, vendor/hospital payment breakdown, and timeline..." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm"></textarea>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Proof Document Attachment (NID, Hospital Invoice, or Endorsement) *</label>
+                <input type="text" id="ben-doc" required value="Hospital_Invoice_NID_Bundle.pdf" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm bg-slate-50 font-mono" />
+              </div>
+              <button type="submit" class="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow">
+                Submit Application to Financial Auditor Queue
+              </button>
+            </form>
+
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm self-start space-y-4">
+              <h3 class="font-bold text-slate-900">Submitted Aid Requests</h3>
+              <div class="space-y-3">
+                ${AppState.aidRequests.map(req => `
+                  <div class="p-3.5 rounded-xl border border-slate-200 bg-slate-50">
+                    <div class="flex justify-between items-center mb-1">
+                      <span class="font-mono text-xs font-bold text-slate-500">${req.id}</span>
+                      <span class="px-2 py-0.5 rounded-full text-[11px] font-bold ${req.status === 'Approved' ? 'bg-emerald-100 text-emerald-800' : req.status === 'Rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${req.status}</span>
+                    </div>
+                    <div class="font-bold text-xs text-slate-900">${req.title}</div>
+                    <div class="text-[11px] text-slate-500 mt-1">Target: $${req.targetAmount.toLocaleString()}</div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+            }
+
+            // 4. ORGANIZATION / EVENT HOST WORKSPACE
+            else if (role === 'organization') {
+                container.innerHTML = `
+          <div class="space-y-6">
+            <div class="flex justify-between items-center bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+              <div>
+                <h3 class="font-bold text-slate-900">Hosted Community Events & Shift Roster</h3>
+                <p class="text-xs text-slate-500">Create multi-shift opportunities and review incoming volunteer applications.</p>
+              </div>
+              <button onclick="document.getElementById('create-event-modal').classList.remove('hidden')" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow">
+                <i class="fa-solid fa-plus mr-1"></i> Post New Event
+              </button>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+              <h4 class="font-bold text-slate-900 mb-4">Volunteer Shift Applicant Review Queue</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                  <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                    <tr>
+                      <th class="p-3">Applicant</th>
+                      <th class="p-3">Event & Shift Role</th>
+                      <th class="p-3">Status</th>
+                      <th class="p-3 text-right">Decision</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100">
+                    ${AppState.shiftApplications.map(app => `
+                      <tr>
+                        <td class="p-3">
+                          <div class="font-bold text-slate-900">${app.applicant}</div>
+                          <div class="text-xs text-slate-500">${app.email}</div>
+                        </td>
+                        <td class="p-3">
+                          <div class="font-semibold text-slate-800">${app.eventTitle}</div>
+                          <div class="text-xs text-emerald-700">${app.shiftRole}</div>
+                        </td>
+                        <td class="p-3">
+                          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${app.status === 'Accepted' ? 'bg-emerald-100 text-emerald-800' : app.status === 'Rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${app.status}</span>
+                        </td>
+                        <td class="p-3 text-right space-x-1">
+                          <button onclick="decideApplicant('${app.id}', 'Accepted')" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700">Accept</button>
+                          <button onclick="decideApplicant('${app.id}', 'Rejected')" class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 text-xs font-bold hover:bg-rose-200">Reject</button>
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `;
+            }
+
+            // 5. REGIONAL LOGISTICS & WAREHOUSE MANAGER WORKSPACE
+            else if (role === 'warehouse') {
+                const hub = AppState.hubs[0];
+                container.innerHTML = `
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+              <h3 class="font-bold text-slate-900 mb-4">Regional Hub Storage & Live Stock Inventory</h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                ${AppState.hubs.map(h => `
+                  <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                    <div class="flex justify-between items-center mb-2">
+                      <span class="font-bold text-sm text-slate-900">${h.name}</span>
+                      <span class="text-xs font-bold ${h.capacity > 80 ? 'text-rose-600' : 'text-emerald-700'}">${h.capacity}% Full</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-200 rounded-full mb-3">
+                      <div class="h-full ${h.capacity > 80 ? 'bg-rose-500' : 'bg-emerald-600'} rounded-full" style="width:${h.capacity}%"></div>
+                    </div>
+                    <div class="text-xs text-slate-600 space-y-1">
+                      <div>• Winter Jackets: <strong>${h.stock['Winter Jackets']}</strong></div>
+                      <div>• Dry Ration Packs: <strong>${h.stock['Dry Ration Packs']}</strong></div>
+                      <div>• Medical Kits: <strong>${h.stock['Medical Kits']}</strong></div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <form onsubmit="dispatchWarehouseStock(event)" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4 self-start">
+              <h3 class="font-bold text-slate-900">Allocate & Dispatch Stock to Event</h3>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Source Hub</label>
+                <select id="wh-source" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+                  ${AppState.hubs.map(h => `<option value="${h.id}">${h.name}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Target Approved Event</label>
+                <select id="wh-event" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+                  ${AppState.events.filter(e => e.status === 'Approved').map(e => `<option value="${e.title}">${e.id}: ${e.title}</option>`).join('')}
+                </select>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Item Type</label>
+                  <select id="wh-item" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+                    <option value="Winter Jackets">Winter Jackets</option>
+                    <option value="Dry Ration Packs">Dry Ration Packs</option>
+                    <option value="Medical Kits">Medical Kits</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Units</label>
+                  <input type="number" id="wh-qty" min="1" max="500" value="50" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm" />
+                </div>
+              </div>
+              <button type="submit" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm">
+                Authorize Stock Dispatch
+              </button>
+            </form>
+          </div>
+        `;
+            }
+
+            // 6. QUALITY CONTROL (QC) INSPECTOR WORKSPACE
+            else if (role === 'qc') {
+                container.innerHTML = `
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4 self-start">
+              <h3 class="font-bold text-slate-900">Package Intake QR Scanner</h3>
+              <p class="text-xs text-slate-500">Enter or select an incoming Package Tag ID to record physical hygiene and condition inspection.</p>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Package Tag ID</label>
+                <input type="text" id="qc-tag-input" value="PKG-8842" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 font-mono font-bold text-sm uppercase" />
+              </div>
+              <div class="grid grid-cols-2 gap-2 pt-1">
+                <button onclick="processQC('QC Passed')" class="py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">
+                  <i class="fa-solid fa-check mr-1"></i> QC Passed (Usable)
+                </button>
+                <button onclick="processQC('QC Rejected')" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold">
+                  <i class="fa-solid fa-xmark mr-1"></i> QC Rejected
+                </button>
+              </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+              <h3 class="font-bold text-slate-900 mb-4">Intake Inspection Log</h3>
+              <div class="space-y-3">
+                ${AppState.packages.map(p => `
+                  <div class="p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <span class="font-mono font-bold text-sm">${p.id}</span>
+                        <span class="text-xs font-semibold text-slate-600">• ${p.category} (${p.qty})</span>
+                      </div>
+                      <div class="text-xs text-slate-500 mt-0.5">Declared Condition: ${p.condition} | Hub: ${p.hub}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="px-2.5 py-1 rounded-full text-xs font-bold ${p.status === 'QC Passed' ? 'bg-emerald-100 text-emerald-800' : p.status === 'QC Rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${p.status}</span>
+                      <button onclick="document.getElementById('qc-tag-input').value='${p.id}'" class="px-2.5 py-1 rounded-lg border border-slate-200 text-xs font-semibold hover:bg-slate-50">Select</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+            }
+
+            // 7. TRANSPORT & FLEET COORDINATOR WORKSPACE
+            else if (role === 'transport') {
+                const pickups = AppState.packages.filter(p => p.method.includes('Pickup') || p.driver !== 'Self Delivery');
+                container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 class="font-bold text-slate-900 mb-1">Donor Home-Pickup & Inter-Hub Fleet Dispatch</h3>
+            <p class="text-xs text-slate-500 mb-4">Assign verified volunteer drivers and cargo vans to scheduled pickups.</p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 text-slate-500 text-xs uppercase">
+                  <tr>
+                    <th class="p-3">Package & Donor</th>
+                    <th class="p-3">Pickup Address → Target Hub</th>
+                    <th class="p-3">Assigned Driver</th>
+                    <th class="p-3 text-right">Dispatch Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${pickups.map(p => `
+                    <tr>
+                      <td class="p-3">
+                        <div class="font-mono font-bold text-slate-900">${p.id}</div>
+                        <div class="text-xs text-slate-500">${p.donor} • ${p.qty}</div>
+                      </td>
+                      <td class="p-3 text-xs">
+                        <div class="font-semibold text-slate-800">${p.address}</div>
+                        <div class="text-emerald-700">→ ${p.hub}</div>
+                      </td>
+                      <td class="p-3 text-xs font-bold text-slate-700">${p.driver}</td>
+                      <td class="p-3 text-right">
+                        <button onclick="assignFleetDriver('${p.id}')" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+                          Assign Volunteer Van
+                        </button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+            }
+
+            // 8. EVENT FIELD DIRECTOR WORKSPACE
+            else if (role === 'field_director') {
+                const checkedInCount = AppState.shiftApplications.filter(a => a.checkedIn).length;
+                container.innerHTML = `
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+              <h3 class="font-bold text-slate-900">Volunteer QR Badge Check-In</h3>
+              <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
+                <span class="text-xs font-bold text-emerald-900">Live On-Site Headcount</span>
+                <span class="text-2xl font-extrabold text-emerald-700">${checkedInCount + 24} Crew</span>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Scan Volunteer Badge / Application ID</label>
+                <div class="flex gap-2">
+                  <input type="text" id="fd-badge-input" value="VOL-904" class="w-full px-3 py-2 rounded-xl border border-slate-200 font-mono text-sm font-bold" />
+                  <button onclick="fieldCheckIn()" class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold whitespace-nowrap">Check In</button>
+                </div>
+              </div>
+              <hr class="border-slate-100" />
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Broadcast Urgent Site Alert</label>
+                <div class="flex gap-2">
+                  <input type="text" id="fd-alert-input" placeholder="e.g., Hydration station restocked at Gate 2" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs" />
+                  <button onclick="broadcastSiteAlert()" class="px-3 py-2 rounded-xl bg-amber-500 text-white text-xs font-bold">Send</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+              <h3 class="font-bold text-slate-900 mb-3">Live Site Operations Feed & Alerts</h3>
+              <div class="space-y-2.5">
+                ${AppState.fieldAlerts.map(al => `
+                  <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between text-xs">
+                    <span class="font-semibold text-slate-800"><i class="fa-solid fa-bullhorn text-amber-600 mr-2"></i>${al.msg}</span>
+                    <span class="text-slate-400 font-mono">${al.time}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+            }
+
+            // 9. FINANCIAL AID AUDITOR WORKSPACE
+            else if (role === 'auditor') {
+                container.innerHTML = `
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <h3 class="font-bold text-slate-900 mb-1">Beneficiary Verification & Fraud Prevention Queue</h3>
+            <p class="text-xs text-slate-500 mb-5">Audit uploaded invoices, NIDs, and institutional letters before publishing campaigns to the public Financial Aid Hub.</p>
+            <div class="space-y-4">
+              ${AppState.aidRequests.map(req => `
+                <div class="p-5 rounded-xl border border-slate-200 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                  <div class="space-y-1 max-w-2xl">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="font-mono text-xs font-bold text-slate-500">${req.id}</span>
+                      <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-bold">${req.category}</span>
+                      <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${req.status === 'Approved' ? 'bg-emerald-100 text-emerald-800' : req.status === 'Rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${req.status}</span>
+                    </div>
+                    <h4 class="font-extrabold text-slate-900">${req.title} — $${req.targetAmount.toLocaleString()}</h4>
+                    <div class="text-xs text-slate-600">Applicant: <strong>${req.applicant}</strong> • Attachment: <span class="font-mono text-emerald-700 underline">${req.proofDoc}</span></div>
+                    <p class="text-xs text-slate-500">${req.justification}</p>
+                  </div>
+                  <div class="flex items-center gap-2 shrink-0">
+                    <button onclick="auditDecision('${req.id}', 'Approved')" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">
+                      <i class="fa-solid fa-shield-check mr-1"></i> Approve & Publish
+                    </button>
+                    <button onclick="auditDecision('${req.id}', 'Rejected')" class="px-4 py-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-700 text-xs font-bold">
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+            }
+
+            // 10. VOLUNTEER RECRUITER & SUPER ADMIN WORKSPACE
+            else if (role === 'admin') {
+                container.innerHTML = `
+          <div class="space-y-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="text-xs text-slate-500">Total Events</div>
+                <div class="text-2xl font-extrabold text-slate-900 mt-1">${AppState.events.length}</div>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="text-xs text-slate-500">Shift Applications</div>
+                <div class="text-2xl font-extrabold text-emerald-600 mt-1">${AppState.shiftApplications.length}</div>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="text-xs text-slate-500">Tracked Relief Parcels</div>
+                <div class="text-2xl font-extrabold text-blue-600 mt-1">${AppState.packages.length}</div>
+              </div>
+              <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="text-xs text-slate-500">Audited Aid Campaigns</div>
+                <div class="text-2xl font-extrabold text-amber-600 mt-1">${AppState.aidRequests.filter(a => a.status === 'Approved').length}</div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+              <h3 class="font-bold text-slate-900 mb-4">Organization Event Moderation Queue</h3>
+              <div class="space-y-3">
+                ${AppState.events.map(ev => `
+                  <div class="p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <span class="font-mono text-xs font-bold text-slate-400">${ev.id}</span>
+                        <span class="font-bold text-sm text-slate-900">${ev.title}</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${ev.status === 'Approved' ? 'bg-emerald-100 text-emerald-800' : ev.status === 'Rejected' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">${ev.status}</span>
+                      </div>
+                      <div class="text-xs text-slate-500 mt-0.5">Host: ${ev.org} • ${ev.location} • ${ev.date}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button onclick="moderateEvent('${ev.id}', 'Approved')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700">Approve</button>
+                      <button onclick="moderateEvent('${ev.id}', 'Rejected')" class="px-3 py-1.5 rounded-lg bg-rose-100 text-rose-700 text-xs font-bold hover:bg-rose-200">Reject</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+            }
+        }
+
+        // -----------------------------------------------------------------------
+        // 10. WORKSPACE ACTION HANDLERS
+        // -----------------------------------------------------------------------
+        function withdrawApplication(appId) {
+            const app = AppState.shiftApplications.find(a => a.id === appId);
+            if (app) app.status = 'Withdrawn';
+            showToast('Application Withdrawn', `Removed shift request ${appId}.`, 'warning');
+            renderWorkspace();
+        }
+
+        function decideApplicant(appId, status) {
+            const app = AppState.shiftApplications.find(a => a.id === appId);
+            if (app) app.status = status;
+            showToast(`Applicant ${status}`, `${app.applicant} marked as ${status}.`, status === 'Accepted' ? 'success' : 'danger');
+            renderWorkspace();
+        }
+
+        function submitNewEvent(e) {
+            e.preventDefault();
+            const newEv = {
+                id: 'EV-' + Math.floor(107 + Math.random() * 800),
+                title: document.getElementById('new-ev-title').value,
+                org: 'Green Dhaka Initiative',
+                category: document.getElementById('new-ev-cat').value,
+                location: document.getElementById('new-ev-loc').value,
+                date: document.getElementById('new-ev-date').value,
+                status: 'Pending Approval',
+                image: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=800&q=80',
+                description: document.getElementById('new-ev-desc').value,
+                requirements: ['Verified Volunteer Profile', 'On-time QR Check-in'],
+                shifts: [{
+                    id: 'SH-' + Math.floor(20 + Math.random() * 80),
+                    role: document.getElementById('new-ev-shift-name').value,
+                    time: '09:00 AM - 01:00 PM',
+                    total: parseInt(document.getElementById('new-ev-shift-spots').value, 10),
+                    filled: 0
+                }]
+            };
+            AppState.events.unshift(newEv);
+            closeModal('create-event-modal');
+            showToast('Event Submitted', `"${newEv.title}" sent to Super Admin moderation queue.`);
+            renderWorkspace();
+        }
+
+        function submitBeneficiaryRequest(e) {
+            e.preventDefault();
+            const newReq = {
+                id: 'AID-' + Math.floor(305 + Math.random() * 600),
+                applicant: document.getElementById('ben-name').value,
+                title: document.getElementById('ben-title').value,
+                category: document.getElementById('ben-cat').value,
+                targetAmount: parseFloat(document.getElementById('ben-amount').value),
+                raisedAmount: 0,
+                status: 'Pending Audit',
+                auditorNote: 'Pending document verification by Financial Aid Auditor.',
+                proofDoc: document.getElementById('ben-doc').value,
+                justification: document.getElementById('ben-just').value
+            };
+            AppState.aidRequests.unshift(newReq);
+            e.target.reset();
+            showToast('Aid Application Submitted', `${newReq.id} queued for Financial Aid Auditor review.`);
+            renderWorkspace();
+        }
+
+        function dispatchWarehouseStock(e) {
+            e.preventDefault();
+            const hubId = document.getElementById('wh-source').value;
+            const evTitle = document.getElementById('wh-event').value;
+            const item = document.getElementById('wh-item').value;
+            const qty = parseInt(document.getElementById('wh-qty').value, 10);
+
+            const hub = AppState.hubs.find(h => h.id === hubId);
+            if (hub && hub.stock[item] >= qty) {
+                hub.stock[item] -= qty;
+                hub.capacity = Math.max(10, hub.capacity - 4);
+                showToast('Stock Dispatched', `Allocated ${qty} ${item} from ${hub.name} to ${evTitle}.`);
+                renderWorkspace();
+            } else {
+                showToast('Insufficient Stock', `Not enough ${item} in selected hub.`, 'danger');
+            }
+        }
+
+        function processQC(result) {
+            const code = document.getElementById('qc-tag-input').value.trim().toUpperCase();
+            const pkg = AppState.packages.find(p => p.id === code);
+            if (!pkg) {
+                showToast('Package Not Found', `No parcel matching ${code}.`, 'danger');
+                return;
+            }
+            pkg.status = result;
+            showToast(`Inspection Logged: ${result}`, `Package ${pkg.id} updated in warehouse ledger.`, result === 'QC Passed' ? 'success' : 'danger');
+            renderWorkspace();
+        }
+
+        function assignFleetDriver(pkgId) {
+            const pkg = AppState.packages.find(p => p.id === pkgId);
+            if (pkg) {
+                pkg.driver = 'Assigned: Driver Karim (Cargo Van #02)';
+                showToast('Driver Dispatched', `Assigned Cargo Van #02 to pickup ${pkg.id}.`);
+                renderWorkspace();
+            }
+        }
+
+        function fieldCheckIn() {
+            const code = document.getElementById('fd-badge-input').value.trim().toUpperCase();
+            AppState.fieldAlerts.unshift({
+                id: Date.now(),
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                msg: `Volunteer QR Badge ${code} verified & checked into active shift.`,
+                level: 'info'
+            });
+            showToast('Volunteer Checked In', `Logged active shift attendance for ${code}.`);
+            renderWorkspace();
+        }
+
+        function broadcastSiteAlert() {
+            const msg = document.getElementById('fd-alert-input').value.trim();
+            if (!msg) return;
+            AppState.fieldAlerts.unshift({
+                id: Date.now(),
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                msg,
+                level: 'warning'
+            });
+            showToast('Site Alert Broadcasted', 'All on-site crew notified.', 'warning');
+            renderWorkspace();
+        }
+
+        function auditDecision(aidId, status) {
+            const req = AppState.aidRequests.find(a => a.id === aidId);
+            if (req) {
+                req.status = status;
+                if (status === 'Approved') {
+                    req.auditorNote = 'Verified & approved by Senior Financial Aid Auditor on ' + new Date().toLocaleDateString();
+                }
+                showToast(`Campaign ${status}`, `${req.id} ${status === 'Approved' ? 'is now live on the Financial Aid Hub.' : 'has been rejected.'}`, status === 'Approved' ? 'success' : 'danger');
+                renderWorkspace();
+            }
+        }
+
+        function moderateEvent(evId, status) {
+            const ev = AppState.events.find(e => e.id === evId);
+            if (ev) {
+                ev.status = status;
+                showToast(`Event ${status}`, `"${ev.title}" marked as ${status}.`, status === 'Approved' ? 'success' : 'danger');
+                renderWorkspace();
+            }
+        }
+
+        // Initialize initial views on load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderEvents();
+            renderHubs();
+            renderAidHub();
+            renderWorkspace();
+        });
+    </script>
+</body>
+
+</html>
